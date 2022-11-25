@@ -1,6 +1,6 @@
 package com.iwdael.taskcenter.defaults;
 
-import com.iwdael.taskcenter.operators.Interceptor;
+import com.iwdael.taskcenter.interfaces.Interceptor;
 
 import java.util.Collection;
 
@@ -9,9 +9,9 @@ import java.util.Collection;
  * @mail : iwdael@outlook.com
  * @project : https://github.com/iwdael/TaskCenter
  */
-public class TaskInterceptor<SRC> implements Interceptor<SRC, Collection<SRC>> {
+public class TaskInterceptor<S> implements Interceptor<S, Collection<S>> {
     @Override
-    public Collection<SRC> intercept(Collection<SRC> collection) {
+    public Collection<S> intercept(Collection<S> collection) {
         return collection;
     }
 }

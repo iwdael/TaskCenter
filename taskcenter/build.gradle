@@ -1,13 +1,26 @@
-plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+apply from: './../config.gradle'
+apply plugin: 'com.android.library'
+
+android {
+    compileSdk buildConfig.compileSdkVersion
+    defaultConfig {
+        minSdk buildConfig.minSdkVersion
+        targetSdk buildConfig.targetSdkVersion
+        versionCode buildConfig.versionCode
+        versionName buildConfig.versionName
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation "com.google.code.gson:gson:2.8.6"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    implementation dep.coreKtx
+    implementation dep.appcompat
+    implementation dep.room
+    implementation dep.gson
+    implementation dep.dbroomCore
+    annotationProcessor dep.dbroomCompiler
+    annotationProcessor dep.roomCompiler
 }

@@ -18,7 +18,11 @@ public class Logger {
         }
 
         public void v(String content) {
-            System.out.println(tag + "  /" + content);
+            android.util.Log.v("task-" + tag, content);
+        }
+
+        public void w(String content) {
+            android.util.Log.w("task-" + tag, content);
         }
     }
 }

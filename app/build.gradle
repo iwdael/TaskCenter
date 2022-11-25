@@ -1,46 +1,38 @@
-plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-}
+apply from: './../config.gradle'
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdk 32
-
+    compileSdk buildConfig.compileSdkVersion
     defaultConfig {
-        applicationId "com.iwdael.taskcenter"
-        minSdk 21
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+        applicationId "com.iwdael.taskcenter.example"
+        minSdk buildConfig.minSdkVersion
+        targetSdk buildConfig.targetSdkVersion
+        versionCode buildConfig.versionCode
+        versionName buildConfig.versionName
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
+    dataBinding {
+        enabled = true
     }
-    buildFeatures {
-        viewBinding true
-    }
+
 }
 
 dependencies {
-
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-    implementation project(":taskcenter")
+    implementation dep.coreKtx
+    implementation dep.appcompat
+    implementation dep.room
+    implementation dep.gson
+    implementation dep.roomKtx
+    implementation dep.coroutinesCore
+    implementation dep.coroutinesAndroid
+    implementation project(path: ':taskcenter')
+    implementation 'com.google.android.material:material:1.4.+'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
 }

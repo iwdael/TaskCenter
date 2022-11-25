@@ -1,30 +1,32 @@
 package com.iwdael.taskcenter.core;
 
+import androidx.annotation.NonNull;
+
 import com.iwdael.taskcenter.TaskCenter;
-import com.iwdael.taskcenter.creator.CloseCreator;
-import com.iwdael.taskcenter.util.Logger;
+import com.iwdael.taskcenter.interfaces.CloseCreator;
+import com.iwdael.taskcenter.task.TaskClosure;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author : iwdael
  * @mail : iwdael@outlook.com
  * @project : https://github.com/iwdael/TaskCenter
  */
-public class NodeClosure<SRC> extends Node<SRC, TaskClosure<SRC>> {
-    private final Class<?> type;
-    private final CloseCreator<SRC> creator;
+public class NodeClosure<S> extends Node<S, TaskClosure<S>, CloseCreator<S>> {
 
-    public NodeClosure(Class<?> type, CloseCreator<SRC> creator) {
-        this.type = type;
-        this.creator = creator;
+    public NodeClosure(Class<?> type, CloseCreator<S> creator) {
+        super(type, creator);
     }
 
     @Override
-    protected TaskClosure<SRC> make(SRC src) {
+    @NotNull
+    protected TaskClosure<S> make(@NonNull S src) {
         return creator.create(src);
     }
 
     public TaskCenter.Chain build() {
-        Node<Object, Object> node = this.asNode();
+        Node<Object, Object, Object> node = this.asNode();
         while (node.pre != null) {
             node = node.pre;
         }

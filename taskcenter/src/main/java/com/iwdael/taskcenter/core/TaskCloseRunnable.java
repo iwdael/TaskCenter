@@ -1,26 +1,51 @@
 package com.iwdael.taskcenter.core;
 
+import com.iwdael.taskcenter.TaskCenter;
+import com.iwdael.taskcenter.task.TaskClosure;
+
 /**
  * @author : iwdael
  * @mail : iwdael@outlook.com
  * @project : https://github.com/iwdael/TaskCenter
  */
-public class TaskCloseRunnable implements Runnable {
-    private final TaskProcessingCenter taskProcessingCenter;
-    private final Node<Object, Object> node;
+class TaskCloseRunnable implements Runnable {
+    private final TaskProcessor taskProcessor;
+    private final Node<Object, Object, Object> node;
+    private final TaskPersistence.TaskFrame taskFrame;
     private final Object source;
+    private final TaskCenter.Config config;
+    private final String taskId;
 
-    public TaskCloseRunnable(TaskProcessingCenter taskProcessingCenter, Node<Object, Object> node, Object source) {
-        this.taskProcessingCenter = taskProcessingCenter;
+    public TaskCloseRunnable(TaskProcessor taskProcessor, TaskCenter.Config config, String taskId, Node<Object, Object, Object> node, TaskPersistence.TaskFrame taskFrame) {
+        this.taskProcessor = taskProcessor;
         this.node = node;
-        this.source = source;
-        taskProcessingCenter.handling(node, source);
+        this.taskFrame = taskFrame;
+        this.source = taskFrame.source;
+        this.config = config;
+        this.taskId = taskId;
+        taskProcessor.stageRunning(node, source);
     }
 
     @Override
     public void run() {
-        ((TaskClosure) this.node.make(this.source)).run(this.source);
-        this.taskProcessingCenter.handled(this.node, this.source);
-        this.taskProcessingCenter.dispatch();
+        try {
+            TaskClosure task = (TaskClosure) this.node.make(this.source);
+            task.callBack = new TaskCallBackImpl(taskProcessor, taskFrame);
+            task.run(this.source);
+            this.taskProcessor.stageAchieved(this.node, this.source);
+            this.taskFrame.progress = 100;
+            this.taskProcessor.notifyProgress();
+            this.taskProcessor.dispatch();
+        } catch (Exception exception) {
+            if (exception instanceof InterruptedException) {
+                taskProcessor.stageSuspend(node, this.source);
+                taskProcessor.notifySuspend();
+                throw exception;
+            } else {
+                exception.printStackTrace();
+                taskProcessor.stageError(node, this.source);
+                taskProcessor.notifyError();
+            }
+        }
     }
 }

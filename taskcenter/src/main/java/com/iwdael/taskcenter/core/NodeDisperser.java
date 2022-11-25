@@ -1,10 +1,15 @@
 package com.iwdael.taskcenter.core;
 
-import com.iwdael.taskcenter.creator.CloseCreator;
-import com.iwdael.taskcenter.creator.DisperseCreator;
-import com.iwdael.taskcenter.creator.UnitCreator;
-import com.iwdael.taskcenter.operators.Interceptor;
-import com.iwdael.taskcenter.operators.Mapper;
+import androidx.annotation.NonNull;
+
+import com.iwdael.taskcenter.interfaces.CloseCreator;
+import com.iwdael.taskcenter.interfaces.DisperseCreator;
+import com.iwdael.taskcenter.interfaces.Interceptor;
+import com.iwdael.taskcenter.interfaces.Mapper;
+import com.iwdael.taskcenter.interfaces.UnitCreator;
+import com.iwdael.taskcenter.task.TaskUnitary;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -13,61 +18,59 @@ import java.util.Collection;
  * @mail : iwdael@outlook.com
  * @project : https://github.com/iwdael/TaskCenter
  */
-public class NodeDisperser<PRE, SRC> extends Node<PRE, TaskUnitary<PRE, Collection<SRC>>> {
-    private final Class<?> type;
-    private final DisperseCreator<PRE, SRC> creator;
-
-    public NodeDisperser(Class<?> type, DisperseCreator<PRE, SRC> creator) {
-        this.type = type;
-        this.creator = creator;
+public class NodeDisperser<P, S> extends Node<P, TaskUnitary<P, Collection<S>>, DisperseCreator<P, S>> {
+    public NodeDisperser(Class<?> type, DisperseCreator<P, S> creator) {
+        super(type, creator);
     }
 
-
+    @NonNull
     @Override
-    protected TaskUnitary<PRE, Collection<SRC>> make(PRE pre) {
+    protected TaskUnitary<P, Collection<S>> make(@NonNull P pre) {
         return creator.create(pre);
     }
 
-    public <DST> NodeDisperser<SRC, DST> append(DisperseCreator<SRC, DST> disperseCreator) {
-        NodeDisperser<SRC, DST> node = new NodeDisperser<>(type, disperseCreator);
+    @NotNull
+    public <D> NodeDisperser<S, D> append(@NotNull DisperseCreator<S, D> disperseCreator) {
+        NodeDisperser<S, D> node = new NodeDisperser<>(type, disperseCreator);
         this.next = node.asNode();
         this.next.index = this.index + 1;
         this.next.pre = this.asNode();
         return node;
     }
 
-    public <DST extends Object> NodeUnitary<SRC, DST> append(UnitCreator<SRC, DST> unitCreator) {
-        NodeUnitary<SRC, DST> node = new NodeUnitary<>(type, unitCreator);
+    @NotNull
+    public <D> NodeUnitary<S, D> append(@NotNull UnitCreator<S, D> unitCreator) {
+        NodeUnitary<S, D> node = new NodeUnitary<>(type, unitCreator);
         this.next = node.asNode();
         this.next.index = this.index + 1;
         this.next.pre = this.asNode();
         return node;
     }
 
-
-    public NodeClosure<SRC> append(CloseCreator<SRC> closeCreator) {
-        NodeClosure<SRC> node = new NodeClosure<>(type, closeCreator);
+    @NotNull
+    public NodeClosure<S> append(@NotNull CloseCreator<S> closeCreator) {
+        NodeClosure<S> node = new NodeClosure<>(type, closeCreator);
         this.next = node.asNode();
         this.next.index = this.index + 1;
         this.next.pre = this.asNode();
         return node;
     }
 
-    public <DST> NodeMapper<SRC, DST> append(Mapper<SRC, DST> mapper) {
-        NodeMapper<SRC, DST> node = new NodeMapper<>(type, mapper);
+    @NotNull
+    public <D> NodeMapper<S, D> append(@NotNull Mapper<S, D> mapper) {
+        NodeMapper<S, D> node = new NodeMapper<>(type, mapper);
         this.next = node.asNode();
         this.next.index = this.index + 1;
         this.next.pre = this.asNode();
         return node;
     }
 
-    public <DST> NodeInterceptor<SRC, DST> append(Interceptor<SRC, DST> interceptor) {
-        NodeInterceptor<SRC, DST> node = new NodeInterceptor<>(type, interceptor);
+    @NotNull
+    public <D> NodeInterceptor<S, D> append(@NotNull Interceptor<S, D> interceptor) {
+        NodeInterceptor<S, D> node = new NodeInterceptor<>(type, interceptor);
         this.next = node.asNode();
         this.next.index = this.index + 1;
         this.next.pre = this.asNode();
         return node;
     }
-
-
 }
